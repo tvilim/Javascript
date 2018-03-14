@@ -19,6 +19,7 @@ const reducer = combineReducers({
 });
 
 const store = createStore(reducer, composeEnhancers(compose(applyMiddleware(thunk))));
+const x = 3;
 
 const app = (
     <Provider store={store} >
