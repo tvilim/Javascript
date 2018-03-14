@@ -1,0 +1,32 @@
+.input {
+    border: 1px solid #CCC;
+    display: table-row;
+}
+
+.item {
+    display: table-cell;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.label {
+    color: blue;
+    text-align: right;
+    padding-right: 5px;
+    width: auto;
+    font-family: arial;
+    font-size: larger;
+}
+
+.control {
+    border: 1px solid #AAA;
+    width: 100%;
+    font-family: arial;
+    font-size: larger;
+}
+
+.control:focus {
+    border: 1px solid lightskyblue;
+}
+
+
