@@ -5,7 +5,7 @@ const initialState = {
     list: null,
     loading: false,
     error: null,
-}
+};
 
 const listReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -36,6 +36,6 @@ const listReducer = (state = initialState, action) => {
         default:
             return state;
     }
-}
+};
 
 export default listReducer;

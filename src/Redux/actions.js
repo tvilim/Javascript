@@ -4,6 +4,11 @@ export const LIST_LOAD_STARTED = "LIST_LOAD_STARTED";
 export const LIST_LOAD_SUCCESS = "LIST_LOAD_SUCCESS";
 export const LIST_LOAD_FAILED = "LIST_LOAD_FAILED";
 
+export const SELECT_ITEM = "SELECT_ITEM";
+export const UNSELECT_ITEM = "UNSELECT_ITEM";
+export const DELETE_SELECTED_ITEMS_ASYNC = "DELETE_SELECTED_ITEMS_ASYNC";
+
+
 export const SAVE_ITEM_ASYNC = "SAVE_ITEM_ASYNC";
 export const SAVE_ITEM_STARTED = "SAVE_ITEM_STARTED";
 export const SAVE_ITEM_SUCCESS = "SAVE_ITEM_SUCCESS";
@@ -39,33 +44,33 @@ const saveAsync = async (dispatch, data) => {
     catch (ex) {
         console.log(ex);
     }
-}
+};
 
 export const saveItemAsync = (dispatch, data) => {
     return dispatch => {
         dispatch(saveItemStarted(data));
         saveAsync(dispatch, data);
-    }
+    };
 };
 
 export const saveItemStarted = (data) => {
     return {
         type: SAVE_ITEM_STARTED,
         value: data,
-    }
+    };
 };
 
 export const saveItemSuccess = () => {
     return {
         type: SAVE_ITEM_SUCCESS,
-    }
+    };
 };
 
 export const saveItemFailed = (error) => {
     return {
         type: SAVE_ITEM_FAILED,
         error: error,
-    }
+    };
 };
 
 /*
@@ -101,10 +106,10 @@ const fetchAsync = async (dispatch) => {
         dispatch(listLoadSuccess(list));
     }
     catch (error) {
-        console.log("Exception: ", error.message)
+        console.log("Exception: ", error.message);
         dispatch(listLoadFailed(error));
     }
-}
+};
 
 
 
@@ -112,28 +117,28 @@ export const loadListAsync = () => {
     return dispatch => {
         dispatch(listLoadStarted());
         fetchAsync(dispatch);
-    }
-}
+    };
+};
 
 export const listLoadStarted = () => {
     return {
         type: LIST_LOAD_STARTED,
-    }
-}
+    };
+};
 
 export const listLoadSuccess = (list) => {
     return {
         type: LIST_LOAD_SUCCESS,
         list: list,
-    }
-}
+    };
+};
 
 export const listLoadFailed = (error) => {
     return {
         type: LIST_LOAD_FAILED,
         error: error,
-    }
-}
+    };
+};
 
 
 

@@ -13,7 +13,7 @@ class App extends Component {
           Header
         </header>
         <DataList />
-        <br/>
+        <br />
         <Form />
       </div>
     );

@@ -21,19 +21,19 @@ class Form extends Component {
                 text: this.state.text,
                 number: this.state.number,
             }
-        }
+        };
 
         this.props.onSaveItem(data);
         this.setState({
             text: '',
             number: '',
-        })
+        });
     }
 
     changeHandler = (event) => {
         const newState = {
             ...this.state,
-        }
+        };
 
         switch (event.target.id) {
             case 'text':
@@ -70,7 +70,7 @@ class Form extends Component {
                         value={this.state.number}
                         changeHandler={this.changeHandler} />
                 </div>
-                <button>Send</button>
+                <button>Add Item</button>
             </form>
         );
     }
@@ -82,12 +82,12 @@ const mapStateToProps = state => {
     return {
 
     };
-}
+};
 
 const mapDispatchToProps = dispatch => {
     return {
         onSaveItem: (data) => dispatch(actions.saveItemAsync(dispatch, data)),
     };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form);

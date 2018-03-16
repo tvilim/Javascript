@@ -1,7 +1,26 @@
+.ListContainer {
+    background-color: whitesmoke;
+    height: 240px;
+}
+
 .List {
-    list-style: square;
+    box-sizing: border-box;
+    background-color: white;
+    list-style-type: none;
+    width: max-content;
+    border: 1px solid black;
+    padding: 3px;
+    margin:  3px auto 3px auto;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .ListItem {
     text-align: left;
+    cursor: pointer;
+    user-select: none;
+}
+
+.SelectedItem {
+    background-color: lightskyblue;
 }
