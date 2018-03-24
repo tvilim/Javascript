@@ -12,3 +12,20 @@
     align-items: baseline;
 }
 
+
+.Spacer {
+    display: table-cell;
+}
+
+
+.ButtonContainer {
+    display: table-cell;
+    width: 100%;
+}
+
+
+.AddButton {
+    margin-top: 10px;
+    display: block;
+}
+

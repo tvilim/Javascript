@@ -1,0 +1,27 @@
+.Button {
+    background-color: whitesmoke;
+    border: 1 px solid whitesmoke;
+    box-shadow: 5px 5px 5px lightgray;
+    color: black;
+    outline: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 8px 15px 8px 15px;
+    font-weight: bold;
+}
+
+.Button:focus {
+    color: darkblue;
+    background-color: lightskyblue;
+}
+
+.Button:hover {
+    color:blue;
+    background-color: lightblue;
+}
+
+.Button[disabled] {
+    color: lightgray;
+    background-color: whitesmoke;
+    cursor: default;
+}

@@ -1,6 +1,6 @@
 .ListContainer {
+    box-sizing: border-box;
     background-color: whitesmoke;
-    height: 240px;
 }
 
 .List {
@@ -9,18 +9,31 @@
     list-style-type: none;
     width: max-content;
     border: 1px solid black;
-    padding: 3px;
-    margin:  3px auto 3px auto;
-    height: 100%;
+    margin:  13px auto 13px auto;
+    height: 253px;
     overflow-y: auto;
+    display: inline-block;
+    padding: 3px 3px 3px 3px;
+    min-width: 200px;
 }
 
 .ListItem {
     text-align: left;
     cursor: pointer;
     user-select: none;
+    padding: 1px 4px 0px 4px;
 }
 
 .SelectedItem {
+    background-color: lightgray;
+}
+
+.SelectedItem.ListFocused {
     background-color: lightskyblue;
+}
+
+.DeleteButton {
+    margin-left: 13px;
+    margin-top: 13px;
+    vertical-align: top;
 }

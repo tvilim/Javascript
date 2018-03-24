@@ -5,7 +5,7 @@ const initialState = {
     value: null,
     saving: false,
     error: null,
-}
+};
 
 const formReducer = (state = initialState, action) => {
     switch (action.type) {

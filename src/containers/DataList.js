@@ -3,6 +3,10 @@ import { connect } from 'react-redux';
 
 import './DataList.css';
 import * as actions from '../Redux/actions';
+import * as Utilities from '../Utilities/Utilities';
+
+import Button from '../components/Button';
+import Backdrop from '../components/Backdrop';
 
 
 class DataList extends Component {
@@ -11,17 +15,79 @@ class DataList extends Component {
         lastClicked: null,
         current: 0,
         focused: false,
+        idToSelect: null,
+    }
+
+    componentWillReceiveProps(nextProps) {
+        //console.log('componentWillReceiveProps: ', nextProps);
+
+        if (nextProps.idToSelect) {
+            //make sure newly added item is selected
+            const id = nextProps.idToSelect;
+
+            const newState = {
+                selectedItems: new Set([id]),
+                lastClicked: id,
+                current: this.getIndexFromId(id, nextProps.list),
+                focused: false,
+                idToSelect: id,
+            };
+            this.setStateEx(newState, "componentWillReceiveProps");
+        } else if (nextProps.list && nextProps.list.length > 0) {
+            const id = nextProps.list[0].id;
+            const newState = {
+                selectedItems: new Set([id]),
+                lastClicked: id,
+                current: 0,
+                focused: false,
+                idToSelect: null,
+            };
+            this.setStateEx(newState, "componentWillReceiveProps");
+        }
     }
 
     componentDidMount() {
         this.props.onLoadListAsync();
     }
 
-    itemClickHandler = (event, id) => {
-        console.log('itemClicked', event, id);
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props === nextProps) {
+            //console.log("next", nextState);
+            //console.log("curr", this.state);
 
-        let newState = { ...this.state };
+            if (nextState.lastClicked === this.state.lastClicked
+                && nextState.current === this.state.current
+                && nextState.focused === this.state.focused
+                && Utilities.setsEqual(nextState.selectedItems, this.state.selectedItems)
+                && nextState.idToSelect === this.state.idToSelect) {
+                return false;   //nothing relevant changed
+            }
+        }
+
+        return true;
+    }
+
+    componentDidUpdate() {
+        if (this.state.focused) {
+            const el = document.getElementById(this.getIdFromIndex(this.state.current));
+            if (el) el.focus();
+        }
+
+        if (this.state.idToSelect) {
+            const element = document.getElementById(this.state.idToSelect);
+            element.scrollIntoView();
+            this.setState({ idToSelect: null });
+        }
+    }
+
+    itemClickHandler = (event) => {
+        const target = this.getValidTarget(event);
+        if (target === null) return;
+
+        const id = target.id;
         const current = this.getIndexFromId(id);
+
+        let newState = Utilities.cloneObject(this.state);
 
         if (event.shiftKey) {
             if (!event.ctrlKey) {
@@ -41,16 +107,27 @@ class DataList extends Component {
 
         newState.lastClicked = id;
         newState.current = this.getIndexFromId(id);
+        newState.focused = true;
 
-        this.setState(newState);
+        this.setStateEx(newState, "itemClickHandler");
+        //  ('LastClicked(mouse):', this.getIndexFromId(newState.lastClicked), newState.lastClicked);
+
         event.preventDefault();
     }
 
-    itemKeyDownHandler = (event, id) => {
-        console.log("Key", event.key);
+    setStateEx = (state, caller) => {
+        //console.log("setStateEx, caller:", caller);
+        this.setState(state);
+    }
+
+    itemKeyDownHandler = (event) => {
+        const target = this.getValidTarget(event);
+        if (target === null) return;
+
+        const id = event.target.id;
 
         const lastIndex = this.props.list.length - 1;
-        let newState = { ...this.state };
+        let newState = Utilities.cloneObject(this.state);
         let newId = null;
 
         switch (event.key) {
@@ -93,9 +170,11 @@ class DataList extends Component {
                 break;
 
             case "PageUp":
+                //TODO
                 break;
 
             case "PageDown":
+                //TODO
                 break;
 
             case "Home":
@@ -119,11 +198,11 @@ class DataList extends Component {
                 break;
 
             default:
-                break;
+                return; //unhandled key
         }
 
-        console.log('LastClicked:', this.getIndexFromId(newState.lastClicked));
-        this.setState(newState);
+        //console.log('LastClicked:', this.getIndexFromId(newState.lastClicked));
+        this.setStateEx(newState, "itemKeyDownHandler");
     }
 
     handleKeyboardSelection(event, newState, newId) {
@@ -153,42 +232,60 @@ class DataList extends Component {
         }
     }
 
-    getIndexFromId(id) {
-        return this.props.list.reduce((accumulator, item, index) => {
-            return (item.id === id) ? index : accumulator;
-        }, 0);
+    getIndexFromId(id, list = this.props.list) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].id === id) return i;
+        }
+        return -1;
     }
 
-    getIdFromIndex(index) {
-        const item = this.props.list[index];
+    getIdFromIndex(index, list = this.props.list) {
+        if (!list || list.length === 0) return null;
+
+        const item = list[index];
         return item ? item.id : null;
     }
 
-    focusHandler = () => {
-        let newState = { ...this.state };
+    focusHandler = (event) => {
+        const target = this.getValidTarget(event);
+        if (target === null) return;
+
+        let newState = Utilities.cloneObject(this.state);
         newState.focused = true;
-        this.setState(newState);
+        this.setStateEx(newState, "focusHandler");
     }
 
-    blurHandler = () => {
-        let newState = { ...this.state };
+    blurHandler = (event) => {
+        const target = this.getValidTarget(event);
+        if (target === null) return;
+
+        let newState = Utilities.cloneObject(this.state);
         newState.focused = false;
-        this.setState(newState);
+        this.setStateEx(newState, "blurHandler");
     }
 
-    componentDidUpdate() {
-        if (this.state.focused) {
-            const el = document.getElementById(this.getIdFromIndex(this.state.current));
-            if (el) el.focus();
+    getValidTarget = (event) => {
+        let target = event.target;
+
+        if (target.className === "List") {
+            return null;
         }
+
+        while (target.id === "") {
+            target = target.parentNode;
+        }
+
+        const classNames = target.className.split(" ");
+        return (classNames.indexOf("ListItem") >= 0) ? target : null;
     }
 
-
-    scrollHandler(event) {
-        console.log("ScrollHandler", event.target);
+    deleteItems = () => {
+        const ids = [...this.state.selectedItems];
+        this.props.onDeleteItemsAsync(ids);
     }
 
     render() {
+        console.log('render DataList: ', this.props.loading, Date.now());
         let list = null;
         if (this.props.loading) {
             list = <p>Loading...</p>;
@@ -199,6 +296,7 @@ class DataList extends Component {
                 list = this.props.list.map((item, index) => {
                     const isSelected = this.state.selectedItems && this.state.selectedItems.has(item.id);
                     const itemClasses = ["ListItem"];
+                    if (this.state.focused) itemClasses.push("ListFocused");
                     if (isSelected) itemClasses.push("SelectedItem");
 
                     return (
@@ -207,22 +305,31 @@ class DataList extends Component {
                             tabIndex={index === this.state.current ? 0 : -1}
                             className={itemClasses.join(' ')}
                             key={item.id}
-                            onClick={event => this.itemClickHandler(event, item.id)}
-                            onKeyDown={event => this.itemKeyDownHandler(event, item.id)}
-                            onFocus={event => this.focusHandler(event)}
-                            onBlur={event => this.blurHandler(event)}
-                        >{"Text: "}<b>{item.item.text}</b>, Item: <b>{item.item.number}</b></div>
+                        >Text: <b>{item.item.text}</b>, Number: <b>{item.item.number}</b></div>
                     );
                 });
             }
         }
+
+        const selectedCount = this.state.selectedItems.size;
+        const deleteDisabled = (selectedCount === 0);
+
         return (
             <div className="ListContainer">
-                <div 
+                <Backdrop show={this.props.loading} />
+                <div
                     className="List"
-                    onScroll={event => this.scrollHandler(event)}>
+                    onFocus={event => this.focusHandler(event)}
+                    onBlur={event => this.blurHandler(event)}
+                    onMouseDown={event => this.itemClickHandler(event)}
+                    onKeyDown={event => this.itemKeyDownHandler(event)}>
                     {list}
                 </div>
+                <Button
+                    cssClass="DeleteButton"
+                    title={`Delete ${selectedCount} item${selectedCount === 1 ? "" : "s"}`}
+                    onClick={this.deleteItems}
+                    disabled={deleteDisabled} />
             </div>
         );
     }
@@ -230,16 +337,19 @@ class DataList extends Component {
 
 
 const mapStateToProps = (state) => {
+    //console.log("mapStateToProps: ", state.list.idToSelect);
     return {
         list: state.list.list,
         loading: state.list.loading,
         error: state.list.error,
+        idToSelect: state.list.idToSelect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         onLoadListAsync: () => dispatch(actions.loadListAsync()),
+        onDeleteItemsAsync: (ids) => dispatch(actions.deleteItemsAsync(ids)),
     };
 };
 

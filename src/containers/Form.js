@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './Form.css';
 import Input from '../components/Input';
+import Button from '../components/Button';
+import Backdrop from '../components/Backdrop';
 
 import * as actions from '../Redux/actions';
 
@@ -12,6 +14,14 @@ class Form extends Component {
         number: '',
     }
 
+    textInput = null;
+
+    componentWillReceiveProps(nextProps) {
+        //console.log('componentWillReceiveProps: ', nextProps);
+        if (this.textInput) {
+            this.textInput.focus();
+        }
+    }
 
     submitHandler = (event) => {
         event.preventDefault();
@@ -52,26 +62,38 @@ class Form extends Component {
     }
 
     render() {
+        const disabled = (this.state.text === "" || this.state.number === "");
+        console.log("render Form", this.props.saving, Date.now());
         return (
-            <form onSubmit={this.submitHandler}>
-                <div className='FormDiv'>
-                    <Input
-                        id="text"
-                        type="text"
-                        label="Text"
-                        placeholder="enter text"
-                        value={this.state.text}
-                        changeHandler={this.changeHandler} />
-                    <Input
-                        id="number"
-                        type="number"
-                        label="Number"
-                        placeholder="enter number"
-                        value={this.state.number}
-                        changeHandler={this.changeHandler} />
-                </div>
-                <button>Add Item</button>
-            </form>
+            <div>
+                <Backdrop show={this.props.saving} />
+                <form onSubmit={this.submitHandler}>
+                    <div className='FormDiv'>
+                        <Input
+                            id="text"
+                            type="text"
+                            label="Text"
+                            placeholder="enter text"
+                            value={this.state.text}
+                            ref={(input) => this.textInput = input}
+                            changeHandler={this.changeHandler} />
+                        <Input
+                            id="number"
+                            type="number"
+                            label="Number"
+                            placeholder="enter number"
+                            value={this.state.number}
+                            changeHandler={this.changeHandler} />
+                        <div className="Spacer" />
+                        <div className="ButtonContainer">
+                            <Button
+                                cssClass="AddButton"
+                                title="Add Item"
+                                disabled={disabled} />
+                        </div>
+                    </div>
+                </form>
+            </div>
         );
     }
 }
@@ -80,7 +102,7 @@ class Form extends Component {
 
 const mapStateToProps = state => {
     return {
-
+        saving: state.form.saving,
     };
 };
 

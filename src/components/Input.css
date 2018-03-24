@@ -1,15 +1,15 @@
-.input {
+.Input {
     border: 1px solid #CCC;
     display: table-row;
 }
 
-.item {
+.Item {
     display: table-cell;
     margin-top: 4px;
     margin-bottom: 4px;
 }
 
-.label {
+.Label {
     color: blue;
     text-align: right;
     padding-right: 5px;
@@ -18,14 +18,15 @@
     font-size: larger;
 }
 
-.control {
+.Control {
     border: 1px solid #AAA;
     width: 100%;
     font-family: arial;
     font-size: larger;
+    padding-left: 3px;
 }
 
-.control:focus {
+.Control:focus {
     border: 1px solid lightskyblue;
 }
 
