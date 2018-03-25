@@ -4,7 +4,6 @@ import './App.css';
 import DataList from './containers/DataList';
 import Form from './containers/Form';
 
-
 class App extends Component {
   render() {
     return (
