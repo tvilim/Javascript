@@ -13,7 +13,6 @@ export const setsEqual = (setA, setB) => {
     return true;
 };
 
-
 export const cloneObject = (item) => {
     let result = null;
     if (!item) return result;
